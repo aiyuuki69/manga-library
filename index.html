@@ -1,4 +1,16 @@
-
+<!DOCTYPE html>
+<html lang="ja" data-theme="system">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>漫画ライブラリ</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1b1b1f">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon.svg">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
 
 <header class="appbar">
   <button class="icon-btn" id="btn-menu" aria-label="メニュー">☰</button>
@@ -6,18 +18,18 @@
   <button class="icon-btn" id="btn-theme" aria-label="テーマ切替">◐</button>
 </header>
 
-<nav class="drawer" id="drawer" hidden="">
-  <a href="#/library" data-nav="">ライブラリ</a>
-  <a href="#/download" data-nav="">ダウンロード</a>
-  <a href="#/settings" data-nav="">設定</a>
+<nav class="drawer" id="drawer" hidden>
+  <a href="#/library" data-nav>ライブラリ</a>
+  <a href="#/download" data-nav>ダウンロード</a>
+  <a href="#/settings" data-nav>設定</a>
   <hr>
   <div id="drawer-folders"></div>
 </nav>
 
 <main id="app">
 
-  
-  <section class="view" id="view-library" hidden="">
+  <!-- ① ライブラリ -->
+  <section class="view" id="view-library" hidden>
     <div class="toolbar">
       <input type="search" id="search" placeholder="タイトル・作者・タグで検索">
       <select id="sort">
@@ -39,32 +51,32 @@
       <span class="muted" id="grid-count"></span>
     </div>
     <div class="cover-grid" id="cover-grid"></div>
-    <p class="empty" id="grid-empty" hidden="">作品がありません。「ダウンロード」からURLを追加してください。</p>
+    <p class="empty" id="grid-empty" hidden>作品がありません。「ダウンロード」からURLを追加してください。</p>
   </section>
 
-  
-  <section class="view" id="view-download" hidden="">
+  <!-- ② ダウンロード -->
+  <section class="view" id="view-download" hidden>
     <form id="dl-form" class="card">
       <label for="dl-url">作品URL</label>
-      <input type="url" id="dl-url" placeholder="https://momon-ga.com/fanzine/mo4329454/" required="">
+      <input type="url" id="dl-url" placeholder="https://momon-ga.com/fanzine/mo4329454/" required>
       <label for="dl-folder">保存先フォルダ</label>
       <select id="dl-folder"></select>
       <div class="row">
         <button class="btn primary" type="submit" id="dl-start">ダウンロード開始</button>
         <button class="btn" type="button" id="dl-pause">停止</button>
       </div>
-      <p class="hint" id="dl-dedupe" hidden=""></p>
+      <p class="hint" id="dl-dedupe" hidden></p>
     </form>
 
-    <div class="card" id="dl-share-box" hidden="">
+    <div class="card" id="dl-share-box" hidden>
       <h3>共有リンク</h3>
       <p class="hint">このURLを開いた人は同じ作品を取り込めます。パスワードは任意です。</p>
       <input type="text" id="share-pass" placeholder="パスワード(空欄可)">
       <div class="row">
         <button class="btn" id="share-make">リンク生成</button>
-        <button class="btn" id="share-copy" hidden="">コピー</button>
+        <button class="btn" id="share-copy" hidden>コピー</button>
       </div>
-      <input type="text" id="share-out" readonly="" hidden="">
+      <input type="text" id="share-out" readonly hidden>
     </div>
 
     <div class="card">
@@ -83,11 +95,11 @@
     </div>
   </section>
 
-  
-  <section class="view" id="view-detail" hidden=""></section>
+  <!-- ③ 作品詳細 -->
+  <section class="view" id="view-detail" hidden></section>
 
-  
-  <section class="view" id="view-viewer" hidden="">
+  <!-- ④ ビュワー -->
+  <section class="view" id="view-viewer" hidden>
     <div class="viewer-bar">
       <button class="icon-btn" id="vw-close" aria-label="閉じる">✕</button>
       <span id="vw-title"></span>
@@ -110,8 +122,8 @@
     </div>
   </section>
 
-  
-  <section class="view" id="view-settings" hidden="">
+  <!-- ⑤ 設定 -->
+  <section class="view" id="view-settings" hidden>
     <div class="card">
       <h3>ストレージ</h3>
       <div class="meter"><div class="meter-fill" id="st-fill"></div></div>
@@ -124,7 +136,7 @@
       <h3>バックアップ・復元</h3>
       <p class="hint">ライブラリ全体をZIPで書き出します。CBZと作品情報が含まれます。</p>
       <button class="btn" id="bk-export">バックアップを書き出す</button>
-      <label class="btn file-btn">バックアップから復元<input type="file" id="bk-import" accept=".zip" hidden=""></label>
+      <label class="btn file-btn">バックアップから復元<input type="file" id="bk-import" accept=".zip" hidden></label>
       <p class="muted" id="bk-state"></p>
     </div>
 
@@ -169,18 +181,19 @@
 
 </main>
 
-<div class="toast" id="toast" hidden=""></div>
-<div class="modal" id="modal" hidden=""><div class="modal-body" id="modal-body"></div></div>
+<div class="toast" id="toast" hidden></div>
+<div class="modal" id="modal" hidden><div class="modal-body" id="modal-body"></div></div>
 
-
-
-
-
-
-
-
-
-
-
-
-
+<script src="https://cdn.jsdelivr.net/npm/dexie@4.0.8/dist/dexie.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="js/util.js"></script>
+<script src="js/db.js"></script>
+<script src="js/source.js"></script>
+<script src="js/cbz.js"></script>
+<script src="js/downloader.js"></script>
+<script src="js/library.js"></script>
+<script src="js/viewer.js"></script>
+<script src="js/settings.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
