@@ -1,0 +1,24 @@
+{
+  "name": "漫画ライブラリ",
+  "short_name": "漫画庫",
+  "description": "momon-ga の作品をCBZとしてローカル保存し、オフラインで読める個人用ライブラリ",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#121215",
+  "theme_color": "#7c5cff",
+  "lang": "ja",
+  "dir": "ltr",
+  "icons": [
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icons/maskable.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ],
+  "categories": ["books", "entertainment"],
+  "file_handlers": [
+    {
+      "action": "./index.html",
+      "accept": { "application/vnd.comicbook+zip": [".cbz"] }
+    }
+  ]
+}

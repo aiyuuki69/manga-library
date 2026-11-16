@@ -1,0 +1,186 @@
+
+
+<header class="appbar">
+  <button class="icon-btn" id="btn-menu" aria-label="メニュー">☰</button>
+  <h1 class="appbar-title" id="appbar-title">漫画ライブラリ</h1>
+  <button class="icon-btn" id="btn-theme" aria-label="テーマ切替">◐</button>
+</header>
+
+<nav class="drawer" id="drawer" hidden="">
+  <a href="#/library" data-nav="">ライブラリ</a>
+  <a href="#/download" data-nav="">ダウンロード</a>
+  <a href="#/settings" data-nav="">設定</a>
+  <hr>
+  <div id="drawer-folders"></div>
+</nav>
+
+<main id="app">
+
+  
+  <section class="view" id="view-library" hidden="">
+    <div class="toolbar">
+      <input type="search" id="search" placeholder="タイトル・作者・タグで検索">
+      <select id="sort">
+        <option value="added-desc">最近追加</option>
+        <option value="read-desc">最近読んだ</option>
+        <option value="title-asc">タイトル順</option>
+        <option value="pages-desc">ページ数順</option>
+      </select>
+      <button class="btn" id="btn-new-folder">+ フォルダ</button>
+    </div>
+
+    <div class="chips" id="tag-chips"></div>
+
+    <div class="section-head"><h2>フォルダ</h2></div>
+    <div class="folder-grid" id="folder-grid"></div>
+
+    <div class="section-head">
+      <h2 id="grid-title">すべての作品</h2>
+      <span class="muted" id="grid-count"></span>
+    </div>
+    <div class="cover-grid" id="cover-grid"></div>
+    <p class="empty" id="grid-empty" hidden="">作品がありません。「ダウンロード」からURLを追加してください。</p>
+  </section>
+
+  
+  <section class="view" id="view-download" hidden="">
+    <form id="dl-form" class="card">
+      <label for="dl-url">作品URL</label>
+      <input type="url" id="dl-url" placeholder="https://momon-ga.com/fanzine/mo4329454/" required="">
+      <label for="dl-folder">保存先フォルダ</label>
+      <select id="dl-folder"></select>
+      <div class="row">
+        <button class="btn primary" type="submit" id="dl-start">ダウンロード開始</button>
+        <button class="btn" type="button" id="dl-pause">停止</button>
+      </div>
+      <p class="hint" id="dl-dedupe" hidden=""></p>
+    </form>
+
+    <div class="card" id="dl-share-box" hidden="">
+      <h3>共有リンク</h3>
+      <p class="hint">このURLを開いた人は同じ作品を取り込めます。パスワードは任意です。</p>
+      <input type="text" id="share-pass" placeholder="パスワード(空欄可)">
+      <div class="row">
+        <button class="btn" id="share-make">リンク生成</button>
+        <button class="btn" id="share-copy" hidden="">コピー</button>
+      </div>
+      <input type="text" id="share-out" readonly="" hidden="">
+    </div>
+
+    <div class="card">
+      <h3>取得状況</h3>
+      <div id="queue"></div>
+      <p class="empty" id="queue-empty">待機中のタスクはありません。</p>
+    </div>
+
+    <div class="card">
+      <h3>download.log</h3>
+      <pre class="log" id="log-view"></pre>
+      <div class="row">
+        <button class="btn" id="log-export">ログを保存</button>
+        <button class="btn" id="log-clear">ログを消去</button>
+      </div>
+    </div>
+  </section>
+
+  
+  <section class="view" id="view-detail" hidden=""></section>
+
+  
+  <section class="view" id="view-viewer" hidden="">
+    <div class="viewer-bar">
+      <button class="icon-btn" id="vw-close" aria-label="閉じる">✕</button>
+      <span id="vw-title"></span>
+      <select id="vw-mode">
+        <option value="paged">ページ送り</option>
+        <option value="scroll">縦スクロール</option>
+        <option value="spread">見開き</option>
+      </select>
+      <select id="vw-dir">
+        <option value="rtl">右綴じ</option>
+        <option value="ltr">左綴じ</option>
+      </select>
+      <span class="muted" id="vw-pos"></span>
+    </div>
+    <div id="vw-stage" class="vw-stage"></div>
+    <div class="vw-footer">
+      <button class="btn" id="vw-prev">前へ</button>
+      <input type="range" id="vw-slider" min="1" value="1">
+      <button class="btn" id="vw-next">次へ</button>
+    </div>
+  </section>
+
+  
+  <section class="view" id="view-settings" hidden="">
+    <div class="card">
+      <h3>ストレージ</h3>
+      <div class="meter"><div class="meter-fill" id="st-fill"></div></div>
+      <p class="muted" id="st-text">計測中…</p>
+      <button class="btn" id="st-persist">永続化を要求</button>
+      <p class="muted" id="st-persist-state"></p>
+    </div>
+
+    <div class="card">
+      <h3>バックアップ・復元</h3>
+      <p class="hint">ライブラリ全体をZIPで書き出します。CBZと作品情報が含まれます。</p>
+      <button class="btn" id="bk-export">バックアップを書き出す</button>
+      <label class="btn file-btn">バックアップから復元<input type="file" id="bk-import" accept=".zip" hidden=""></label>
+      <p class="muted" id="bk-state"></p>
+    </div>
+
+    <div class="card">
+      <h3>表示設定</h3>
+      <label for="set-theme">テーマ</label>
+      <select id="set-theme">
+        <option value="system">システム</option>
+        <option value="light">ライト</option>
+        <option value="dark">ダーク</option>
+      </select>
+      <label for="set-accent">テーマカラー</label>
+      <input type="color" id="set-accent" value="#7c5cff">
+      <label for="set-lang">言語</label>
+      <select id="set-lang">
+        <option value="ja">日本語</option>
+        <option value="en">English</option>
+      </select>
+    </div>
+
+    <div class="card">
+      <h3>取得設定</h3>
+      <label for="set-concurrency">同時ダウンロード数</label>
+      <input type="number" id="set-concurrency" min="1" max="6" value="3">
+      <label for="set-proxy">プロキシ方式</label>
+      <select id="set-proxy">
+        <option value="auto">自動(直fetch→プロキシ)</option>
+        <option value="proxy">常にプロキシ</option>
+        <option value="off">直fetchのみ</option>
+      </select>
+      <label for="set-custom-proxy">カスタムプロキシ (URLの {url} を置換)</label>
+      <input type="text" id="set-custom-proxy" placeholder="https://example.com/?url={url}">
+    </div>
+
+    <div class="card">
+      <h3>メンテナンス</h3>
+      <button class="btn" id="mt-verify">ライブラリの整合性確認</button>
+      <button class="btn" id="mt-cache">キャッシュ削除</button>
+      <pre class="log" id="mt-out"></pre>
+    </div>
+  </section>
+
+</main>
+
+<div class="toast" id="toast" hidden=""></div>
+<div class="modal" id="modal" hidden=""><div class="modal-body" id="modal-body"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
