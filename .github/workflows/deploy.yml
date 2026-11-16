@@ -1,0 +1,58 @@
+name: Deploy PWA to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify entry point
+        run: |
+          test -f index.html || { echo "index.html が見つかりません"; exit 1; }
+          test -f sw.js || { echo "sw.js が見つかりません"; exit 1; }
+          test -f manifest.webmanifest || { echo "manifest.webmanifest が見つかりません"; exit 1; }
+
+      - name: Stage site
+        run: |
+          mkdir -p dist
+          rsync -a --exclude='.git' --exclude='.github' --exclude='dist' --exclude='node_modules' ./ dist/
+          touch dist/.nojekyll
+          echo "--- staged files ---"
+          find dist -type f | sort
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+          retention-days: 1
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
